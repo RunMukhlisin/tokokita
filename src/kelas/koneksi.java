@@ -22,7 +22,7 @@ public class koneksi {
    public Connection konekDB() throws SQLException{
        try {
            konekSQL = DriverManager.getConnection(URL, user, password);
-           
+           System.out.println("Terkoneksi");
        } catch (SQLException sQLException) {
            System.out.println("koneksi gagal");
        }

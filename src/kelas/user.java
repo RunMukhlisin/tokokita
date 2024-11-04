@@ -1,18 +1,11 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package kelas;
+import java.sql.PreparedStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.Statement;
-import  java.sql.ResultSet;
 import javax.swing.JOptionPane;
-/**
- *
- * @author ASUS
- */
+        
 public class user {
     String user_name, user_email, user_password, user_fullname;
     int user_status;
@@ -23,15 +16,14 @@ public class user {
     private ResultSet rs;
     private String query;
     
-    public user () throws SQLException{
+    public user() throws SQLException{
         koneksi koneksi = new koneksi();
         konek = koneksi.konekDB();
     }
-    
-    
+
     public String getUser_name() {
         return user_name;
-    }
+    }   
 
     public void setUser_name(String user_name) {
         this.user_name = user_name;
@@ -68,10 +60,10 @@ public class user {
     public void setUser_status(int user_status) {
         this.user_status = user_status;
     }
-    
+ 
     public void tambahUser(){
+        query = "INSERT INTO user VALUES(?,?,MD5(?),?,?)";
         try {
-            query = "INSERT INTO user VALUES(?,?,MD5(?),?,?)";
             ps = konek.prepareStatement(query);
             ps.setString(1, user_name);
             ps.setString(2, user_email);
@@ -80,10 +72,82 @@ public class user {
             ps.setInt(5, user_status);
             ps.executeUpdate();
             ps.close();
-            
-            JOptionPane.showMessageDialog(null, "user berhasil ditambahkan");
+            JOptionPane.showMessageDialog(null, "User Berhasil Ditambahkan");
         } catch (SQLException sQLException) {
-            JOptionPane.showMessageDialog(null, "user gagal ditambahkan");
+            JOptionPane.showMessageDialog(null, "User Gagal");
         }
+    }
+    
+    public ResultSet tampilUser(){
+        query = "SELECT * FROM user";
+        try {
+            st = konek.createStatement();            
+            rs = st.executeQuery(query);
+        } catch (SQLException sQLException) {
+            JOptionPane.showMessageDialog(null, "Data Gagal Tampil");
+        }
+        return rs;
+    }
+    
+    public void hapusUser(){
+        query = "DELETE FROM user WHERE user_name = ?";
+        try {
+            ps = konek.prepareStatement(query);
+            ps.setString(1, user_name);
+            
+            ps.executeUpdate();
+            ps.close();
+            JOptionPane.showMessageDialog(null, "User berhasil dihapus");
+        } catch (SQLException sQLException) {
+            JOptionPane.showMessageDialog(null, "User Gagal Dihapus");
+        }
+    }
+    
+    public void ubahUser(){
+        if (user_password.equals("")) {
+            query = "UPDATE user SET user_email = ?,"
+                    + "user_fullname = ?, "
+                    + "user_status= ? "
+                    + "WHERE user_name = ?";
+            
+            try {
+            ps = konek.prepareStatement(query);
+            ps.setString(1, user_email);
+            ps.setString(2, user_fullname);
+            ps.setInt(3, user_status);
+            ps.setString(4, user_name);
+            
+            ps.executeUpdate();
+            ps.close();
+            JOptionPane.showMessageDialog(null, "User berhasil Diubah");
+            
+        } catch (SQLException sQLException) {
+            JOptionPane.showMessageDialog(null, "User Gagal Diubah");
+        }
+            
+        }else{
+        query = "UPDATE user SET user_email = ?,"
+                    + "user_fullname = ?, "
+                    + "user_status= ?,"
+                    + "user_password = MD5(?)"
+                    + "WHERE user_name = ?";
+            
+            try {
+            ps = konek.prepareStatement(query);
+            
+            ps.setString(1, user_email);
+            ps.setString(2, user_fullname);
+            ps.setInt(3, user_status);
+            ps.setString(4, user_password);
+            ps.setString(5, user_name);
+            
+            ps.executeUpdate();
+            ps.close();
+            JOptionPane.showMessageDialog(null, "User berhasil Diubah");
+        } catch (SQLException sQLException) {
+            JOptionPane.showMessageDialog(null, "User Gagal Diubah");
+        }    
+        }
+
     }
 }
